@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: >-
+  Creating a Redshift Cluster
+
+Parameters:
+  MasterUsername:
+    Type: String
+    Description: Name of the Redshift Database User
+  MasterUserPassword:
+    NoEcho: true
+    Type: String
+    Description: Password of the Redshift Database Master User
+
+Resources:
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for the Redshift Cluster
+      VpcId: !ImportValue 
+          'Fn::Sub': 'network-Vpc1Id'
+  SubnetGroup:
+    Type: AWS::Redshift::ClusterSubnetGroup
+    Properties: 
+      Description: Subnet Group for Redshift Cluster
+      SubnetIds: 
+        - !ImportValue 
+          'Fn::Sub': 'network-SubnetForVpc1'
+  Cluster:
+    Type: AWS::Redshift::Cluster
+    Properties: 
+      ClusterIdentifier: redshiftCluster
+      ClusterSecurityGroups:
+        - !Ref SecurityGroup
+      ClusterSubnetGroupName: !Ref SubnetGroup
+      ClusterType: single-node
+      DBName: mydb
+      MasterUsername: !Ref MasterUsername
+      MasterUserPassword: !Ref MasterUserPassword
+      NodeType: dc2.large

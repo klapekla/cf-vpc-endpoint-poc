@@ -1,0 +1,68 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: >-
+  Creating 2 VPCs with 2 Subnets
+
+Resources:
+  Vpc1:
+    Type: AWS::EC2::VPC
+    Description: VPC-1
+    Properties:
+      CidrBlock: '192.168.0.0/24'
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-VPC-1'
+  SubnetForVpc1:
+    Type: AWS::EC2::Subnet 
+    Properties:
+      AvailabilityZone: !Select [ 0, Fn::GetAZs: !Ref 'AWS::Region' ]
+      CidrBlock: '192.168.0.0/24'
+      MapPublicIpOnLaunch: false
+      VpcId: !Ref Vpc1
+      Tags:
+        - Key: Name
+          Value: Subnet
+  Vpc2:
+    Type: AWS::EC2::VPC
+    Description: VPC-2
+    Properties:
+      CidrBlock: '192.168.1.0/24'
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-VPC-2'
+  SubnetForVpc2:
+    Type: AWS::EC2::Subnet 
+    Properties:
+      AvailabilityZone: !Select [ 0, Fn::GetAZs: !Ref 'AWS::Region' ]
+      CidrBlock: '192.168.1.0/24'
+      MapPublicIpOnLaunch: false
+      VpcId: !Ref Vpc2
+      Tags:
+        - Key: Name
+          Value: Subnet
+
+Outputs:
+  Vpc1:
+    Description: VPC ID for VPC 1
+    Value: !Ref Vpc1
+    Export:
+      Name: !Sub "${AWS::StackName}-Vpc1Id"
+  SubnetForVpc1:
+    Description: ID of Subnet in VPC 1
+    Value: !Ref SubnetForVpc1
+    Export:
+      Name: !Sub "${AWS::StackName}-SubnetForVpc1"
+  Vpc2:
+    Description: VPC ID for VPC 2
+    Value: !Ref Vpc2
+    Export:
+      Name: !Sub "${AWS::StackName}-Vpc2Id"
+  SubnetForVpc2:
+    Description: ID of Subnet in VPC 2
+    Value: !Ref SubnetForVpc2
+    Export:
+      Name: !Sub "${AWS::StackName}-SubnetForVpc2"
